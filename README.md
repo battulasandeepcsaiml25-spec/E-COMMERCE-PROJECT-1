@@ -69,7 +69,7 @@ The final algorithm should be selected based on experimental results and evaluat
 | Scikit-learn | Machine learning and model evaluation |
 | Matplotlib | Data visualization |
 | Seaborn | Statistical visualizations |
-| Streamlit / Flask | Optional web application interface |
+| Streamlit / FastApi | Optional web application interface |
 
 ## 📂 Suggested Project Structure
 
@@ -130,12 +130,6 @@ Activate the environment:
 
 ```bash
 venv\Scripts\activate
-```
-
-**macOS / Linux:**
-
-```bash
-source venv/bin/activate
 ```
 
 ### Step 4: Install Dependencies
