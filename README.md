@@ -1,218 +1,320 @@
-# 🛒 Online Purchase Conversion Advisor
 
+# 🛒 Online Purchase Conversion Advisor
 ### An AI & Machine Learning-Based E-Commerce Purchase Prediction System
 
-## 📌 About the Project
+## 📌 Project Overview
 
-**Online Purchase Conversion Advisor** is an AI and Machine Learning-based project designed to predict whether a customer visiting an e-commerce website is likely to make a purchase.
+**Online Purchase Conversion Advisor** is a machine learning project designed to predict whether an online shopping session is likely to result in a purchase.
 
-Many customers browse online shopping websites without completing a purchase. This project analyzes customer browsing behavior and session data to identify patterns associated with purchasing decisions.
+Many visitors browse e-commerce websites without completing a purchase. This project analyzes browsing behavior and session-related data to identify patterns associated with purchasing decisions.
 
-Using machine learning algorithms, the system predicts the likelihood of a purchase and provides insights that can help businesses understand customer behavior and identify opportunities to improve conversion rates.
+The system predicts purchase intention based on historical session data and helps e-commerce businesses make data-driven marketing decisions.
 
-## 🎯 Problem Statement
+**Unit of Analysis:** An online shopping session, not an identified individual customer.
 
-E-commerce businesses often face the challenge of converting website visitors into paying customers. Understanding why customers purchase products or leave without buying is essential for improving business performance.
+## 🎯 Project Objectives
 
-This project aims to use machine learning to analyze customer session data, predict purchase behavior, and support data-driven business decisions.
+- Analyze online shopping session data.
+- Perform data preprocessing and cleaning.
+- Select relevant features for prediction.
+- Train a machine learning classification model.
+- Predict whether a shopping session will result in a purchase.
+- Evaluate model performance using classification metrics.
+- Develop a user-friendly interface for purchase prediction.
 
-## 🚀 Objectives
+## 📊 Dataset Information
 
-- Predict whether a customer session will result in a purchase.
-- Analyze customer browsing behavior and purchasing patterns.
-- Apply machine learning classification algorithms.
-- Visualize important customer behavior and conversion trends.
-- Generate actionable insights to help businesses improve conversion rates.
+**Dataset Name:** Online Shoppers Purchasing Intention Dataset
 
-## ✨ Key Features
+**Source:** UCI Machine Learning Repository
 
-- **Customer Data Analysis:** Analyze customer session information and browsing patterns.
-- **Data Preprocessing:** Handle missing values, encode categorical variables, and prepare data for modeling.
-- **Purchase Prediction:** Predict purchase or no-purchase outcomes using a trained machine learning model.
-- **Probability Estimation:** Estimate the likelihood of a purchase when supported by the selected model.
-- **Data Visualization:** Present customer behavior and conversion trends through charts.
-- **Business Insights:** Identify potential opportunities to improve the online shopping experience.
+**Dataset Link:** https://archive.ics.uci.edu/dataset/468/online+shoppers+purchasing+intention+dataset
 
-*Note: These features describe the intended project scope. Update this section to reflect the features implemented in your actual application.*
+- Original records: 12,330 sessions
+- Problem Type: Binary Classification
+- Target Variable: `Revenue`
+- Positive Class: `Revenue = True` (purchase)
+- Negative Class: `Revenue = False` (no purchase)
 
-## 🧠 Machine Learning Approach
+The dataset contains features such as:
 
-The project follows a supervised machine learning classification approach.
+- Administrative page visits
+- Administrative page duration
+- Informational page visits
+- Product-related page visits and duration
+- Bounce rates
+- Exit rates
+- Page values
+- Special-day information
+- Month and visitor type
+- Operating system and browser
+- Region and traffic type
+- Weekend indicator
 
-**Workflow:**
+## 🔄 Project Workflow
 
-1. Collect or load an e-commerce customer session dataset.
-2. Explore the dataset and understand its features.
-3. Clean and preprocess the data.
-4. Separate input features and the target variable.
-5. Split the data into training and testing sets.
-6. Train a classification model.
-7. Evaluate the model's performance.
-8. Use the trained model to predict purchase behavior.
-9. Visualize results and derive business insights.
+The project follows this machine learning workflow:
 
-### Possible Algorithms
+```text
+Dataset Collection
+        ↓
+Data Preprocessing
+        ↓
+Exploratory Data Analysis (EDA)
+        ↓
+Feature Selection
+        ↓
+Train-Test Split
+        ↓
+Machine Learning Model Selection
+        ↓
+Model Training
+        ↓
+Prediction
+        ↓
+Performance Evaluation
+        ↓
+Save Trained Model
+        ↓
+Frontend / User Interface
+        ↓
+Purchase Conversion Result
+```
 
-- Logistic Regression
+### 1. Dataset Collection
+Load the Online Shoppers Purchasing Intention Dataset and understand its structure, features, and target variable.
 
-## 🛠️ Technology Stack
+### 2. Data Preprocessing
+- Inspect the dataset and data types.
+- Check for missing values and duplicate records.
+- Handle data quality issues where necessary.
+- Prepare categorical and numerical features.
+- Separate input features from the target variable.
 
-| Technology | Purpose |
-|---|---|
-| Python | Main programming language |
-| Pandas | Data manipulation and analysis |
-| NumPy | Numerical computations |
-| Scikit-learn | Machine learning and model evaluation |
-| Matplotlib | Data visualization |
-| Seaborn | Statistical visualizations |
-| Streamlit / FastApi | Optional web application interface |
+### 3. Exploratory Data Analysis (EDA)
+Analyze the dataset to understand purchase patterns, feature distributions, class imbalance, and relationships between session behavior and purchase outcomes.
 
-## 📂 Suggested Project Structure
+### 4. Feature Selection
+Select relevant input features that may help predict purchasing behavior. The `Revenue` column is used as the target and must not be included as an input feature.
+
+### 5. Train-Test Split
+Split the dataset into training and testing sets. The training set is used to train the model, while the testing set evaluates its performance on unseen data.
+
+### 6. Machine Learning Model Selection
+Choose a suitable classification algorithm for predicting purchase intention. A simple baseline can also be used for comparison.
+
+### 7. Model Training
+Train the selected model using the training dataset. Apply the same preprocessing pipeline consistently during training and prediction.
+
+### 8. Prediction
+Provide session-related input values to the trained model. The model predicts whether the session is likely to result in a purchase.
+
+### 9. Performance Evaluation
+Evaluate the model using appropriate metrics:
+
+- Accuracy
+- Precision
+- Recall
+- F1-score
+- Confusion Matrix
+- ROC-AUC, when appropriate
+
+### 10. Model Saving
+Save the trained model and any required preprocessing objects so they can be loaded by the application without retraining every time.
+
+### 11. Frontend Development
+Develop a user-friendly interface using HTML, CSS, and JavaScript, or Streamlit, depending on the application implementation.
+
+### 12. Final Prediction Result
+Display the predicted purchase outcome and, if supported by the model, the estimated purchase probability.
+
+## 🛠️ Technologies Used
+
+- **Python** — Main programming language
+- **Pandas** — Data manipulation and preprocessing
+- **NumPy** — Numerical computations
+- **Scikit-learn** — Machine learning and model evaluation
+- **Joblib** — Saving and loading the trained model
+- **HTML** — Frontend structure
+- **CSS** — Styling and responsive design
+- **JavaScript** — Frontend interactions
+- **FastAPI** — Backend API integration, if used
+- **Streamlit** — Alternative interface, if used
+
+## 📁 Project Structure
 
 ```text
 Online-Purchase-Conversion-Advisor/
 │
-├── data/
-│   └── dataset.csv
+├── dataset.csv
+├── preprocessing.py
+├── feature_selection.py
+├── train_model.py
+├── evaluate_model.py
+├── predict.py
+├── purchase_conversion_model.pkl
 │
-├── notebooks/
-│   └── exploratory_analysis.ipynb
+├── frontend/
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
 │
-├── models/
-│   └── trained_model.pkl
+├── backend/
+│   └── main.py
 │
-├── src/
-│   ├── preprocessing.py
-│   ├── train_model.py
-│   └── predict.py
-│
-├── app.py
 ├── requirements.txt
-├── .gitignore
 └── README.md
 ```
 
-*This is a suggested structure. Adjust it to match your actual repository. Do not include generated model files or datasets unless they are part of your project.*
+*Note: Adjust the filenames and folders to match your actual project structure.*
 
 ## ⚙️ Installation and Setup
-### Prerequisites
-
-- Python 3.10 or a compatible version
-- Git
-- A code editor such as Visual Studio Code
 
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/Online-Purchase-Conversion-Advisor.git
-```
-
-### Step 2: Navigate to the Project Directory
-
-```bash
+git clone <YOUR_GITHUB_REPOSITORY_URL>
 cd Online-Purchase-Conversion-Advisor
 ```
 
-### Step 3: Create a Virtual Environment
+Replace the placeholder with your actual GitHub repository URL.
+
+### Step 2: Create a Virtual Environment
 
 ```bash
-python -m venv venv
+python -m venv .venv
 ```
 
-Activate the environment:
-
-**Windows:**
+Activate it on Windows:
 
 ```bash
-venv\Scripts\activate
+.venv\Scripts\activate
 ```
 
-### Step 4: Install Dependencies
+### Step 3: Install Dependencies
 
-If your repository contains `requirements.txt`, run:
+If you have a `requirements.txt` file:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Otherwise, install the libraries your implementation actually uses. For example:
+Otherwise, install the libraries required by your code. For example:
 
 ```bash
-pip install pandas numpy scikit-learn matplotlib seaborn
+pip install pandas numpy scikit-learn joblib
 ```
 
-### Step 5: Run the Project
-
-Run the entry point that matches your implementation.
-
-For a Python script:
+For a FastAPI backend, install:
 
 ```bash
-python src/train_model.py
+pip install fastapi uvicorn
 ```
 
-For a Streamlit application, if implemented:
+### Step 4: Run Data Preprocessing
+
+```bash
+python preprocessing.py
+```
+
+### Step 5: Perform Feature Selection
+
+```bash
+python feature_selection.py
+```
+
+### Step 6: Train the Machine Learning Model
+
+```bash
+python train_model.py
+```
+
+### Step 7: Evaluate Model Performance
+
+```bash
+python evaluate_model.py
+```
+
+### Step 8: Run the Application
+
+For a FastAPI backend, if the entry point is `backend/main.py` and it defines `app`:
+
+```bash
+uvicorn backend.main:app --reload
+```
+
+Open the API documentation at:
+
+http://127.0.0.1:8000/docs
+
+For a Streamlit application, if the entry file is `app.py`:
 
 ```bash
 streamlit run app.py
 ```
 
-## 📊 Model Evaluation
+Use the commands that match the actual filenames in your project.
 
-The model can be evaluated using the following metrics:
+## 📈 Model Evaluation
 
-- **Accuracy:** Overall proportion of correct predictions.
-- **Precision:** Proportion of predicted purchases that are actual purchases.
-- **Recall:** Proportion of actual purchases correctly identified.
-- **F1-Score:** Balance between precision and recall.
-- **Confusion Matrix:** Shows correct and incorrect predictions for each class.
+The trained model is evaluated on a held-out test dataset to measure its ability to predict online purchase intention.
 
-Because purchase and non-purchase sessions may be imbalanced, precision, recall, F1-score, and the confusion matrix should be considered alongside accuracy.
+| Metric | Purpose |
+|---|---|
+| Accuracy | Measures overall prediction correctness |
+| Precision | Measures how many predicted purchases are actual purchases |
+| Recall | Measures how many actual purchases are identified |
+| F1-score | Balances precision and recall |
+| Confusion Matrix | Shows correct and incorrect classifications |
+| ROC-AUC | Measures class-ranking performance, when applicable |
 
-Actual performance metrics should be added after training and testing the model.
+Actual evaluation results should be added after running the model.
 
-## 💡 Expected Benefits
+## 💡 Applications
 
-- Better understanding of customer purchasing behavior.
-- Identification of patterns associated with successful purchases.
-- Data-driven insights for e-commerce businesses.
-- Support for decisions about website usability and checkout improvements.
-- A practical application of machine learning to a real-world business problem.
+- E-commerce purchase intention analysis
+- Customer session behavior analysis
+- Marketing campaign prioritization
+- Conversion optimization research
+- Data-driven business decision support
 
-## 🔮 Future Enhancements
+## ⚠️ Limitations
 
-- Build an interactive web dashboard.
+- Predictions are based on historical session data.
+- A prediction does not guarantee that a purchase will occur.
+- Imbalanced data may affect the model's ability to identify purchase sessions.
+- Performance may vary across different websites and customer populations.
+- The system provides decision support rather than guaranteed sales forecasts.
+
+## 🚀 Future Enhancements
+
 - Compare multiple machine learning algorithms.
-- Add feature importance and explainable AI.
-- Integrate real-time customer session analysis.
-- Develop personalized recommendations or conversion improvement suggestions.
-- Monitor model performance as customer behavior changes.
+- Improve prediction performance through hyperparameter tuning.
+- Add interactive data visualization dashboards.
+- Display important features influencing predictions.
+- Deploy the application online.
+- Monitor model performance as shopping behavior changes.
 
-## ⚠️ Limitations and Responsible Use
+## 🎓 Project Details
 
-- Predictions are estimates, not guarantees of customer behavior.
-- Model performance depends on dataset quality and representativeness.
-- Customer data should be handled securely and with appropriate permission.
-- Recommendations should support, rather than manipulate, customer decisions.
+**Project Title:** Online Purchase Conversion Advisor
 
-## 👨‍💻 Project Information
+**Domain:** Artificial Intelligence and Machine Learning
 
-**Project Name:** Online Purchase Conversion Advisor
+**Project Type:** Supervised Machine Learning — Binary Classification
 
-**Domain:** Artificial Intelligence, Machine Learning, and E-Commerce Analytics
+**Dataset:** UCI Online Shoppers Purchasing Intention Dataset
 
-**Project Type:** Academic / Student Project
-
-**Primary Goal:** Predict online purchase conversion and generate useful customer behavior insights.
-
-## 🤝 Contributions
-
-Suggestions and improvements are welcome. You can fork the repository, create a feature branch, and submit a pull request.
-
-## 📄 License
-
-This project can be distributed under the MIT License if you choose to include one. Add a `LICENSE` file before claiming that the project is MIT-licensed.
+**Objective:** Predict whether an online shopping session is likely to result in a purchase.
 
 ---
 
-⭐ If you find this project useful, consider giving the repository a star!
+## 📚 References
+
+Sakar, C. O., et al. *Online Shoppers Purchasing Intention Dataset*. UCI Machine Learning Repository.
+
+Dataset: https://archive.ics.uci.edu/dataset/468/online+shoppers+purchasing+intention+dataset
+
+---
+
+**Online Purchase Conversion Advisor — Turning Browsing Behavior into Data-Driven Insights.**
