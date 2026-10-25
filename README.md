@@ -54,10 +54,6 @@ The project follows a supervised machine learning classification approach.
 ### Possible Algorithms
 
 - Logistic Regression
-- Decision Tree Classifier
-- Random Forest Classifier
-
-The final algorithm should be selected based on experimental results and evaluation metrics.
 
 ## 🛠️ Technology Stack
 
@@ -99,7 +95,6 @@ Online-Purchase-Conversion-Advisor/
 *This is a suggested structure. Adjust it to match your actual repository. Do not include generated model files or datasets unless they are part of your project.*
 
 ## ⚙️ Installation and Setup
-
 ### Prerequisites
 
 - Python 3.10 or a compatible version
