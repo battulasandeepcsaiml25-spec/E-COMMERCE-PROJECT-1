@@ -2,3 +2,5 @@
 *.joblib
 *.csv
 __pycache__
+!purchase_conversion_model.pkl
+!selected_features_dataset.csv
