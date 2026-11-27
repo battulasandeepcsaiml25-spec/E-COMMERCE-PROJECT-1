@@ -942,8 +942,10 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
 <script>
 const form = document.getElementById("predictForm");
 
-// Configure these values for your deployment. Demo fallback is deliberately off by default.
-let API_BASE_URL = "http://127.0.0.1:8000";
+// Configure these values for your deployment. In production on Vercel, it uses relative endpoints.
+let API_BASE_URL = (window.location.protocol === "http:" && (window.location.port === "5500" || window.location.port === "3000"))
+  ? "http://127.0.0.1:8000"
+  : "";
 const ALLOW_DEMO_FALLBACK = false;
 // Exact input column names used to train the Logistic Regression pipeline.
 const API_TIMEOUT_MS = 15000;
@@ -1109,14 +1111,15 @@ function setLoading(isLoading) {
 
 async function checkApiConnection() {
   const status = document.getElementById("connectionStatus");
-  const url = API_BASE_URL.replace(/\/$/, "") + "/health";
-  status.dataset.state = "loading"; status.textContent = "Checking " + url + "…";
+  const url = API_BASE_URL ? (API_BASE_URL.replace(/\/$/, "") + "/health") : "/health";
+  const displayUrl = API_BASE_URL ? url : (window.location.origin + "/health");
+  status.dataset.state = "loading"; status.textContent = "Checking " + displayUrl + "…";
   try {
     const response = await fetch(url, { signal: AbortSignal.timeout(API_TIMEOUT_MS) });
     if (!response.ok) throw new Error("HTTP " + response.status);
     const data = await response.json();
     if (data.status && data.status !== "ok" && data.status !== "healthy") throw new Error("Backend reports status: " + data.status);
-    status.dataset.state = "ok"; status.textContent = "Connected · " + url;
+    status.dataset.state = "ok"; status.textContent = "Connected · " + displayUrl;
     document.getElementById("apiStatus").textContent = "Prediction API connected";
     document.getElementById("apiStatusDetail").textContent = "Backend health check passed.";
     document.getElementById("modePill").textContent = "● API CONNECTED";
