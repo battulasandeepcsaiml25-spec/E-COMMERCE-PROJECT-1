@@ -943,7 +943,7 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
 const form = document.getElementById("predictForm");
 
 // Configure these values for your deployment. In production on Vercel, it uses relative endpoints.
-let API_BASE_URL = (window.location.protocol === "http:" && (window.location.port === "5500" || window.location.port === "3000"))
+let API_BASE_URL = (window.location.protocol === "file:" || (window.location.protocol === "http:" && (window.location.port === "5500" || window.location.port === "3000" || window.location.port === "5173")))
   ? "http://127.0.0.1:8000"
   : "";
 const ALLOW_DEMO_FALLBACK = false;
@@ -1138,7 +1138,8 @@ async function requestPrediction(data) {
   setLoading(true);
   document.getElementById("requestError").classList.remove("show");
   try {
-    const response = await fetch(API_BASE_URL.replace(/\/$/, "") + "/predict", {
+    const url = API_BASE_URL ? (API_BASE_URL.replace(/\/$/, "") + "/predict") : "/predict";
+    const response = await fetch(url, {
       method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify(buildPayload(data)), signal: activeRequest.signal
     });

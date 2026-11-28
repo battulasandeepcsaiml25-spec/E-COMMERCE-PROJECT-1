@@ -1,28 +1,15 @@
 """FastAPI adapter matching the three-input Streamlit prediction flow."""
+import math
 from pathlib import Path
 from typing import Literal
 import os
-import joblib
-import pandas as pd
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
 BASE_DIR = Path(__file__).resolve().parent
-
-def find_file(filename: str) -> Path:
-    candidates = [
-        BASE_DIR / filename,
-        BASE_DIR.parent / "api" / filename,
-        Path.cwd() / "backend" / filename,
-        Path.cwd() / "api" / filename,
-        Path.cwd() / filename,
-    ]
-    for p in candidates:
-        if p.exists():
-            return p
-    return BASE_DIR / filename
 
 def get_index_html() -> str:
     candidates = [
@@ -40,10 +27,6 @@ def get_index_html() -> str:
             except Exception:
                 pass
     return "<h1>ConversionIQ Prediction Advisor</h1><p>index.html not found.</p>"
-
-MODEL_PATH = find_file("purchase_conversion_model.pkl")
-DATA_PATH = find_file("selected_features_dataset.csv")
-TARGET_COLUMN = "Revenue"
 
 FEATURE_NAMES = [
     "Administrative",
@@ -83,6 +66,29 @@ DEFAULT_BASELINE_VALUES = {
     "VisitorType_Returning_Visitor": 1.0,
 }
 
+SCALER_MEAN = [
+    2.338550665718061, 80.67557968444304, 0.5028966358369753, 35.44457252446773,
+    31.665921333468848, 1202.1309802170388, 0.021353204579632076, 0.04218055310448217,
+    6.402395670885456, 0.06195751600772435, 0.12521597723345868, 0.23457668462242098,
+    0.0458379916658197, 0.19402378290476674, 0.10620998068909442, 0.6971236914320561,
+]
+
+SCALER_SCALE = [
+    3.330848397191776, 176.66476228801486, 1.2977212488306165, 144.74250397176414,
+    43.77638955057694, 2014.1574786924289, 0.049499312218669135, 0.05069516875684017,
+    28.540091296474266, 0.19953974336457214, 0.33096364797199196, 0.4237339538601718,
+    0.2091336180193513, 0.3954472841885384, 0.30810618411696417, 0.4595021765739522,
+]
+
+MODEL_COEF = [
+    0.08215223759293507, 0.03503877581647857, 0.09523317432465425, -0.051270638818320426,
+    0.13610530819245603, 0.08433999170581823, -0.40424112329918543, -0.4045851720768666,
+    3.1569429752255798, -0.1341135249595962, -0.11126340061359408, -0.18197104049293727,
+    0.17309852492464498, 0.34041475317127184, 0.04106909578622636, -0.02813723484399387,
+]
+
+MODEL_INTERCEPT = -0.5534685942676714
+
 app = FastAPI(title="ConversionIQ Prediction API")
 app.add_middleware(
     CORSMiddleware,
@@ -93,7 +99,6 @@ app.add_middleware(
 )
 
 class PredictionRequest(BaseModel):
-    """The same three values exposed by the Streamlit form."""
     pages: int = Field(ge=0)
     duration: float = Field(ge=0)
     page_value: float = Field(ge=0)
@@ -102,36 +107,6 @@ class PredictionResponse(BaseModel):
     purchase_probability: float = Field(ge=0, le=1)
     predicted_class: str
     priority: Literal["low", "medium", "high"]
-
-model = None
-feature_names: list[str] = list(FEATURE_NAMES)
-baseline_values: dict = dict(DEFAULT_BASELINE_VALUES)
-load_error = None
-
-try:
-    if MODEL_PATH.exists():
-        model = joblib.load(MODEL_PATH)
-    else:
-        raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
-
-    if DATA_PATH.exists():
-        try:
-            dataset = pd.read_csv(DATA_PATH)
-            if TARGET_COLUMN in dataset.columns:
-                feature_frame = dataset.drop(columns=[TARGET_COLUMN])
-                feature_names = feature_frame.columns.tolist()
-                calculated_medians = feature_frame.median(numeric_only=True).to_dict()
-                for feat in feature_names:
-                    if feat in calculated_medians:
-                        baseline_values[feat] = calculated_medians[feat]
-                    else:
-                        modes = feature_frame[feat].mode(dropna=True)
-                        baseline_values[feat] = modes.iloc[0] if not modes.empty else 0
-        except Exception:
-            pass
-except Exception as exc:
-    model = None
-    load_error = str(exc)
 
 @app.get("/", response_class=HTMLResponse)
 @app.get("/index.html", response_class=HTMLResponse)
@@ -142,51 +117,33 @@ def root():
 @app.get("/health")
 @app.get("/api/health")
 def health():
-    if model is None:
-        raise HTTPException(status_code=503, detail=f"Model unavailable: {load_error}")
     return {
         "status": "ok",
         "model_loaded": True,
-        "feature_count": len(feature_names),
+        "feature_count": len(FEATURE_NAMES),
     }
 
 @app.post("/predict", response_model=PredictionResponse)
 @app.post("/api/predict", response_model=PredictionResponse)
 def predict(request: PredictionRequest):
-    if model is None:
-        raise HTTPException(status_code=503, detail=f"Model unavailable: {load_error}")
-
-    input_values = dict(baseline_values)
+    input_values = dict(DEFAULT_BASELINE_VALUES)
     overrides = {
-        "ProductRelated": request.pages,
-        "ProductRelated_Duration": request.duration,
-        "PageValues": request.page_value,
+        "ProductRelated": float(request.pages),
+        "ProductRelated_Duration": float(request.duration),
+        "PageValues": float(request.page_value),
     }
     input_values.update(overrides)
 
-    row = pd.DataFrame([[input_values[name] for name in feature_names]], columns=feature_names)
+    feature_values = [float(input_values[name]) for name in FEATURE_NAMES]
 
-    try:
-        predicted = model.predict(row)[0]
-        if not hasattr(model, "predict_proba"):
-            raise ValueError("Loaded model does not support predict_proba().")
-        probabilities = model.predict_proba(row)[0]
-        classes = list(model.classes_)
-        positive_index = next(
-            (
-                i for i, label in enumerate(classes)
-                if str(label).strip().lower() in {"1", "true", "yes"}
-            ),
-            None,
-        )
-        if positive_index is None:
-            raise ValueError(f"Could not identify purchase class in {classes!r}.")
-        probability = float(probabilities[positive_index])
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Prediction failed: {exc}") from exc
+    z = MODEL_INTERCEPT
+    for x, m, s, c in zip(feature_values, SCALER_MEAN, SCALER_SCALE, MODEL_COEF):
+        z += c * ((x - m) / s)
+
+    probability = 1.0 / (1.0 + math.exp(-z))
+    positive_prediction = probability >= 0.5
 
     priority = "high" if probability >= 0.70 else "medium" if probability >= 0.40 else "low"
-    positive_prediction = str(predicted).strip().lower() in {"1", "true", "yes"}
     return PredictionResponse(
         purchase_probability=probability,
         predicted_class="purchase" if positive_prediction else "no_purchase",
