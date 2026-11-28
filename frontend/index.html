@@ -1,0 +1,1260 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConversionIQ | AI Purchase Advisor</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+:root {
+  --bg: #080b16;
+  --panel: #101629;
+  --panel2: #131b31;
+  --border: rgba(148,163,184,.14);
+  --text: #f4f7ff;
+  --muted: #8e9bb8;
+  --blue: #6d8cff;
+  --cyan: #4ce4ff;
+  --purple: #a78bfa;
+  --green: #52e6b2;
+}* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(67,91,210,.20), transparent 34%),
+    radial-gradient(ellipse at 92% 12%, rgba(143,72,222,.13), transparent 28%),
+    var(--bg);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+button, input { font: inherit; }
+button { cursor: pointer; }
+.app {
+  display: grid;
+  grid-template-columns: 235px minmax(0,1fr);
+  min-height: 100vh;
+}
+/* SIDEBAR */
+.sidebar {
+  padding: 28px 18px;
+  border-right: 1px solid var(--border);
+  background: rgba(8,11,22,.82);
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0 8px;
+}
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  font-size: 21px;
+  background: linear-gradient(135deg,#6d8cff,#a855f7);
+  box-shadow: 0 0 25px rgba(109,140,255,.32);
+}
+.brand-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -.6px;
+}
+.brand-name span { color: var(--cyan); }
+.brand-sub {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+  letter-spacing: 1.4px;
+}
+.nav-label {
+  padding: 0 10px;
+  color: #66728e;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  margin-bottom: 12px;
+}
+.nav-item {
+  padding: 13px 12px;
+  margin: 5px 0;
+  border-radius: 11px;
+  color: #9ca9c4;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+.nav-item.active {
+  color: white;
+  background: linear-gradient(90deg,rgba(93,121,255,.22),rgba(93,121,255,.06));
+  border: 1px solid rgba(109,140,255,.22);
+}
+.nav-icon { width: 20px; text-align: center; font-size: 17px; }
+.sidebar-bottom { margin-top: auto; }
+.model-card {
+  border: 1px solid var(--border);
+  background: linear-gradient(145deg,#151e36,#0e1425);
+  border-radius: 15px;
+  padding: 16px;
+}
+.status-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.dot {
+  width: 7px;
+  height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--green);
+}
+.model-card p {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+  margin: 10px 0 0;
+}
+/* MAIN */
+main {
+  padding: 28px clamp(18px,3vw,42px) 35px;
+  max-width: 1700px;
+  width: 100%;
+  margin: 0 auto;
+}
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 32px;
+}
+.breadcrumb { font-size: 12px; color: var(--muted); }
+.breadcrumb strong { color: #e8edff; }
+.top-actions { display: flex; gap: 10px; align-items: center; }
+.demo-pill {
+  font-size: 11px;
+  color: #ffd68a;
+  border: 1px solid rgba(255,214,138,.2);
+  background: rgba(255,214,138,.07);
+  border-radius: 30px;
+  padding: 9px 12px;
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 12px;
+  background: linear-gradient(135deg,#4ce4ff,#6d8cff);
+  color: #071020;
+}
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(24px,4vw,43px);
+  border-radius: 24px;
+  border: 1px solid rgba(135,153,255,.2);
+  background:
+    radial-gradient(circle at 84% 50%,rgba(103,95,255,.22),transparent 27%),
+    linear-gradient(115deg,#141d38 0%,#11182e 48%,#17152f 100%);
+  margin-bottom: 24px;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  right: 5%;
+  top: -130px;
+  border: 1px solid rgba(130,151,255,.15);
+  border-radius: 50%;
+  box-shadow: 0 0 0 35px rgba(130,151,255,.025),0 0 0 70px rgba(130,151,255,.025);
+  pointer-events: none;
+}
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cyan);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+.eyebrow::before {
+  content: "";
+  width: 20px;
+  height: 1px;
+  background: var(--cyan);
+}
+h1, h2, h3, p { margin-top: 0; }
+.hero h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(30px,4vw,47px);
+  letter-spacing: -1.8px;
+  line-height: 1.13;
+  max-width: 620px;
+  margin: 18px 0 13px;
+}
+.gradient-text {
+  background: linear-gradient(90deg,#7d9aff,#c4a2ff,#4ce4ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero p {
+  color: #9daaca;
+  line-height: 1.8;
+  font-size: 13px;
+  max-width: 580px;
+  margin-bottom: 20px;
+}
+.hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag {
+  border: 1px solid rgba(169,184,255,.15);
+  background: rgba(255,255,255,.035);
+  color: #c4cce4;
+  padding: 8px 11px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin: 28px 0 16px;
+}
+.section-heading h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  margin: 0;
+  letter-spacing: -.4px;
+}
+.section-heading p {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 6px 0 0;
+}
+.small-label {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: .8px;
+}
+/* METRIC CARDS */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 15px;
+}
+.metric {
+  background: linear-gradient(145deg,rgba(19,28,50,.95),rgba(13,19,35,.95));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 19px;
+}
+.metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 11px;
+}
+.metric-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  background: rgba(109,140,255,.13);
+}
+.metric-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 27px;
+  font-weight: 700;
+  margin: 15px 0 7px;
+}
+.metric-note { color: #7e8ba8; font-size: 10px; }
+/* WORKSPACE */
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0,1.04fr) minmax(0,.96fr);
+  gap: 18px;
+  align-items: stretch;
+}
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: linear-gradient(145deg,rgba(17,25,45,.96),rgba(12,18,33,.97));
+  padding: 23px;
+  min-width: 0;
+}
+.panel-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.panel-title h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  margin: 0 0 7px;
+}
+
+.panel-title p { font-size: 11px; color: var(--muted); margin: 0; line-height: 1.6; }
+
+.step-badge {
+  font-size: 10px;
+  color: #aebaff;
+  border: 1px solid rgba(109,140,255,.23);
+  background: rgba(109,140,255,.1);
+  border-radius: 7px;
+  padding: 7px 9px;
+  white-space: nowrap;
+}
+
+.field { margin-bottom: 19px; }
+
+.field-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 9px;
+  font-size: 12px;
+  color: #dbe3fa;
+}
+
+.field-label span:last-child {
+  font-size: 10px;
+  color: #7785a3;
+}
+
+.input-wrap { position: relative; }
+
+.input-wrap input {
+  width: 100%;
+  border: 1px solid #293551;
+  border-radius: 11px;
+  background: #0b1121;
+  color: white;
+  padding: 14px 15px;
+  outline: none;
+  transition: .2s;
+  font-size: 13px;
+}
+.input-wrap select {
+  width: 100%; border: 1px solid #293551; border-radius: 11px; background: #0b1121;
+  color: white; padding: 14px 15px; outline: none; font-size: 13px;
+}
+.input-wrap select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(109,140,255,.1); }
+.input-wrap select.invalid { border-color: #fb7185; }
+.feature-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 14px; }
+.feature-grid .field { min-width:0; }
+.feature-grid .field:last-child { grid-column:1 / -1; }
+.session-input-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 18px; }
+.session-input-grid .field:last-child { grid-column:auto; }
+@media (max-width: 600px) { .feature-grid { grid-template-columns:1fr; } .feature-grid .field:last-child { grid-column:auto; } }
+
+.input-wrap input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(109,140,255,.1);
+}
+
+.input-wrap input.invalid { border-color: #fb7185; }
+
+.field-help { color: #71809e; font-size: 10px; margin-top: 7px; line-height: 1.6; }
+
+.predict-btn {
+  border: 0;
+  width: 100%;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 11px;
+  padding: 15px;
+  background: linear-gradient(100deg,#5b7cff,#8b5cf6 65%,#9e69ff);
+  box-shadow: 0 7px 24px rgba(106,105,255,.2);
+  transition: transform .2s, box-shadow .2s;
+}
+
+.predict-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(106,105,255,.34);
+}
+
+.btn-sub {
+  text-align: center;
+  color: #72809d;
+  font-size: 10px;
+  margin-top: 12px;
+}
+.connection-tools { display:flex; gap:8px; align-items:center; margin-top:10px; }
+.connection-tools button { border:1px solid rgba(109,140,255,.3); border-radius:8px; background:rgba(109,140,255,.1); color:#dbe3fa; padding:8px 10px; font-size:10px; }
+.connection-status { color:var(--muted); font-size:10px; line-height:1.5; }
+.connection-status[data-state="ok"] { color:var(--green); }
+.connection-status[data-state="error"] { color:#fb7185; }
+.connection-status[data-state="loading"] { color:#ffd68a; }
+.request-error { display:none; margin:12px 0 0; padding:11px; border:1px solid rgba(251,113,133,.35); border-radius:9px; background:rgba(251,113,133,.08); color:#fecdd3; font-size:11px; line-height:1.6; }
+.request-error.show { display:block; }
+.predict-btn:disabled { opacity:.65; cursor:wait; transform:none; }
+
+.result-placeholder {
+  min-height: 315px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 18px;
+}
+
+.placeholder-icon {
+  width: 78px;
+  height: 78px;
+  border: 1px solid rgba(109,140,255,.25);
+  background: radial-gradient(circle,rgba(109,140,255,.2),rgba(109,140,255,.025));
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  font-size: 33px;
+  margin-bottom: 22px;
+  box-shadow: 0 0 40px rgba(109,140,255,.08);
+}
+
+.result-placeholder h3 { font-size: 16px; margin-bottom: 8px; }
+.result-placeholder p { color: var(--muted); font-size: 11px; line-height: 1.8; max-width: 270px; }
+
+.result-content { display: none; }
+.result-content.show { display: block; animation: rise .5s ease; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.result-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.result-top h3 { margin: 0; font-family: 'Space Grotesk',sans-serif; font-size: 16px; }
+
+.priority {
+  padding: 7px 10px;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(82,230,178,.1);
+  color: var(--green);
+  border: 1px solid rgba(82,230,178,.18);
+}
+
+.gauge-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0 17px;
+}
+
+.gauge {
+  width: 178px;
+  height: 178px;
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.gauge svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+
+.gauge circle {
+  fill: none;
+  stroke-width: 9;
+}
+
+.gauge-track { stroke: #252e47; }
+
+.gauge-progress {
+  stroke: url(#gaugeGradient);
+  stroke-dasharray: 440;
+  stroke-dashoffset: 440;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.2s ease;
+}
+
+.gauge-center {
+  position: absolute;
+  text-align: center;
+}
+
+.gauge-number {
+  font-family: 'Space Grotesk',sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.gauge-percent { font-size: 13px; color: var(--cyan); }
+
+.gauge-caption { color: var(--muted); font-size: 10px; margin-top: 5px; }
+
+.verdict {
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.025);
+  border-radius: 12px;
+  text-align: center;
+  padding: 15px;
+  margin-bottom: 18px;
+}
+
+.verdict strong { display: block; font-size: 14px; margin-bottom: 7px; }
+.verdict span { color: var(--muted); font-size: 11px; line-height: 1.6; }
+
+.result-bars { display: grid; gap: 15px; }
+
+.bar-head {
+  display: flex;
+  justify-content: space-between;
+  color: #c3cce4;
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.bar-head span:last-child { color: white; font-weight: 600; }
+
+.bar-track { height: 6px; background: #252e47; border-radius: 10px; overflow: hidden; }
+.bar-fill { width: 0; height: 100%; border-radius: 10px; transition: width 1s ease; }
+.bar-buy { background: linear-gradient(90deg,#5b7cff,#4ce4ff); }
+.bar-not { background: linear-gradient(90deg,#a78bfa,#ec78bb); }
+
+.disclaimer {
+  color: #8d9ab5;
+  font-size: 10px;
+  line-height: 1.7;
+  border-top: 1px solid var(--border);
+  padding-top: 13px;
+  margin-top: 20px;
+}
+
+/* BOTTOM */
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.insight:last-child { border-bottom: 0; padding-bottom: 0; }
+
+.insight-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(76,228,255,.08);
+  color: var(--cyan);
+}
+
+.insight h4 { font-size: 12px; margin: 2px 0 6px; }
+.insight p { color: var(--muted); font-size: 11px; line-height: 1.7; margin: 0; }
+
+.signal-list { display: grid; gap: 15px; }
+
+.signal-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.signal-head span:first-child { color: #c5cde2; }
+.signal-head span:last-child { color: var(--cyan); }
+
+.signal-track { height: 5px; background: #242e47; border-radius: 8px; overflow: hidden; }
+.signal-fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg,#5b7cff,#a78bfa); }
+
+.footer {
+  color: #65728d;
+  font-size: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+
+/* INTERACTIONS: consistent hover, focus and active feedback */
+.nav-item {
+  width: 100%; border: 1px solid transparent; background: transparent; text-align: left;
+  font: inherit; cursor: pointer; transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease;
+}
+.nav-item:hover, .nav-item:focus-visible {
+  color: #fff; background: rgba(109,140,255,.13); border-color: rgba(109,140,255,.28); transform: translateX(3px); outline: none;
+}
+.nav-item:active { transform: translateX(1px) scale(.99); }
+.metric, .panel, .tag, .model-card, .placeholder-icon, .metric-icon, .insight-icon {
+  transition: transform .24s ease, border-color .24s ease, box-shadow .24s ease, background-color .24s ease;
+}
+.metric:hover, .panel:hover {
+  border-color: rgba(109,140,255,.38); box-shadow: 0 12px 32px rgba(0,0,0,.16); transform: translateY(-2px);
+}
+.tag:hover { border-color: rgba(76,228,255,.45); background: rgba(76,228,255,.08); color: #fff; transform: translateY(-2px); }
+.metric-icon:hover, .insight-icon:hover, .placeholder-icon:hover { transform: scale(1.06) rotate(-2deg); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+input:hover { border-color: #52658e; }
+.predict-btn:active { transform: translateY(0) scale(.99); }
+.nav-item.active { cursor: pointer; }
+html { scroll-behavior: smooth; scroll-padding-top: 22px; }
+
+html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+
+/* Small modal used by Dataset Explorer and Settings */
+.app-modal-backdrop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 20px; background: rgba(3,6,15,.76); backdrop-filter: blur(9px); }
+.app-modal { width: min(520px, 100%); max-height: 85vh; overflow: auto; border: 1px solid rgba(135,153,255,.3); border-radius: 18px; padding: 24px; background: linear-gradient(145deg,#151e36,#0b1121); box-shadow: 0 25px 80px rgba(0,0,0,.45); animation: rise .22s ease; }
+.app-modal-head { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:18px; }
+.app-modal h3 { margin:0; font:700 19px 'Space Grotesk',sans-serif; }
+.app-modal p, .app-modal li { color:var(--muted); font-size:13px; line-height:1.8; }
+.modal-close { border:1px solid var(--border); border-radius:9px; background:#0b1121; color:#fff; padding:8px 11px; cursor:pointer; transition:.2s; }
+.modal-close:hover { background:#293858; border-color:var(--blue); }
+.modal-action { border:1px solid rgba(109,140,255,.35); border-radius:10px; background:rgba(109,140,255,.12); color:#fff; padding:11px 13px; cursor:pointer; margin:5px 7px 0 0; transition:.2s; }
+.modal-action:hover { background:rgba(109,140,255,.25); transform:translateY(-1px); }
+.modal-stat-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:16px 0; }
+.modal-stat { padding:13px; border:1px solid var(--border); border-radius:11px; background:rgba(255,255,255,.025); }
+.modal-stat strong { display:block; font:700 19px 'Space Grotesk',sans-serif; margin-bottom:5px; }
+.modal-stat span { color:var(--muted); font-size:10px; }
+@media (max-width: 480px) { .modal-stat-grid { grid-template-columns:1fr; } }
+
+@media (max-width: 1050px) {
+  .app { grid-template-columns: 190px minmax(0,1fr); }
+  .workspace { grid-template-columns: 1fr; }
+  .result-placeholder { min-height: 250px; }
+}
+
+@media (max-width: 760px) {
+  .app { display: block; }
+  .sidebar {
+    padding: 15px 18px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+    gap: 0;
+  }
+  .sidebar .nav-group, .sidebar-bottom { display: none; }
+  .brand { padding: 0; }
+  main { padding: 20px 15px 28px; }
+  .topbar { margin-bottom: 20px; }
+  .metrics { grid-template-columns: 1fr; gap: 10px; }
+  .metric { padding: 15px; }
+  .metric-value { margin: 10px 0 5px; }
+  .bottom-grid { grid-template-columns: 1fr; }
+  .hero { border-radius: 18px; }
+  .hero h1 { letter-spacing: -1px; }
+  .demo-pill { font-size: 9px; }
+  .panel { padding: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">✦</div>
+      <div>
+        <div class="brand-name">Conversion<span>IQ</span></div>
+        <div class="brand-sub">INTELLIGENCE PLATFORM</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">WORKSPACE</div>
+      <button type="button" class="nav-item active" data-nav="overview"><span class="nav-icon">▦</span> Overview</button>
+      <button type="button" class="nav-item" data-nav="advisor"><span class="nav-icon">⌁</span> Purchase Advisor</button>
+      <button type="button" class="nav-item" data-nav="analytics"><span class="nav-icon">◷</span> Session Analytics</button>
+      <button type="button" class="nav-item" data-nav="insights"><span class="nav-icon">⌘</span> Model Insights</button>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">PROJECT</div>
+      <button type="button" class="nav-item" data-nav="dataset"><span class="nav-icon">◈</span> Dataset Explorer</button>
+      <button type="button" class="nav-item" data-nav="settings"><span class="nav-icon">⚙</span> Settings</button>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="model-card">
+        <div class="status-line"><span class="dot" id="apiDot"></span> <span id="apiStatus">Checking API…</span></div>
+        <p id="apiStatusDetail">Configure the API base URL in Settings and check the connection.</p>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div class="breadcrumb">Workspace / <strong>Overview</strong></div>
+      <div class="top-actions">
+        <div class="demo-pill" id="modePill">● API NOT CHECKED</div>
+        <div class="avatar">AI</div>
+      </div>
+    </header>
+
+    <section class="hero" id="overview">
+      <div class="eyebrow">AI-POWERED E-COMMERCE ANALYTICS</div>
+      <h1>Turn browsing behavior into<br><span class="gradient-text">smarter decisions.</span></h1>
+      <p>
+        Discover which shopping sessions show stronger purchase intent.
+        Analyze browsing behavior, estimate conversion likelihood, and
+        prioritize opportunities with an intelligent decision-support interface.
+      </p>
+      <div class="hero-tags">
+        <span class="tag">✦ Machine Learning</span>
+        <span class="tag">◉ Purchase Prediction</span>
+        <span class="tag">⌁ Session Intelligence</span>
+      </div>
+    </section>
+
+    <div class="section-heading">
+      <div>
+        <h2>Workspace overview</h2>
+        <p>Your purchase conversion analysis at a glance.</p>
+      </div>
+      <span class="small-label">PROJECT DASHBOARD</span>
+    </div>
+
+    <section class="metrics">
+      <div class="metric">
+        <div class="metric-top">
+          <span>Dataset sessions</span>
+          <span class="metric-icon">▤</span>
+        </div>
+        <div class="metric-value">12,330</div>
+        <div class="metric-note">UCI Online Shoppers dataset</div>
+      </div>
+      <div class="metric">
+        <div class="metric-top">
+          <span>Purchase sessions</span>
+          <span class="metric-icon">↗</span>
+        </div>
+        <div class="metric-value">1,908</div>
+        <div class="metric-note">Historical positive target cases</div>
+      </div>
+      <div class="metric">
+        <div class="metric-top">
+          <span>Historical conversion rate</span>
+          <span class="metric-icon">◎</span>
+        </div>
+        <div class="metric-value">15.47%</div>
+        <div class="metric-note">Purchases divided by all sessions</div>
+      </div>
+    </section>
+
+    <div class="section-heading">
+      <div>
+        <h2>Purchase conversion advisor</h2>
+        <p>Enter session details to explore a prediction.</p>
+      </div>
+      <span class="small-label">01 — PREDICT</span>
+    </div>
+
+    <section class="workspace" id="purchase-advisor">
+
+      <div class="panel">
+        <div class="panel-title">
+          <div>
+            <h3>Session configuration</h3>
+            <p>Provide the browsing behavior for one shopping session.</p>
+          </div>
+          <span class="step-badge">3 SESSION INPUTS</span>
+        </div>
+
+        <form id="predictForm">
+          <p class="field-help" style="margin:0 0 16px">Adjust these three session values. The backend fills all other model features from the medians in selected_features_dataset.csv, matching your Streamlit version.</p>
+          <div class="feature-grid session-input-grid">
+            <div class="field">
+              <label class="field-label" for="pages"><span>Product-related pages</span><span>PAGE COUNT</span></label>
+              <div class="input-wrap"><input id="pages" type="number" min="0" step="1" value="10" required></div>
+              <div class="field-help">Number of product-related pages visited.</div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="duration"><span>Product page duration</span><span>SECONDS</span></label>
+              <div class="input-wrap"><input id="duration" type="number" min="0" step="10" value="300" required></div>
+              <div class="field-help">Total time spent viewing product-related pages.</div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="pageValue"><span>Page value</span><span>DATASET VALUE</span></label>
+              <div class="input-wrap"><input id="pageValue" type="number" min="0" step="1" value="10" required></div>
+              <div class="field-help">PageValues feature from the dataset; not product price.</div>
+            </div>
+          </div>
+
+          <button class="predict-btn" type="submit">✦ &nbsp; Predict Purchase</button>
+          <div class="btn-sub" id="requestStatus" role="status" aria-live="polite">Predictions are sent to the configured FastAPI backend.</div>
+          <div class="request-error" id="requestError" role="alert"></div>
+          <div class="connection-tools">
+            <button type="button" id="checkApiButton">Check API connection</button>
+            <span id="connectionStatus" class="connection-status" aria-live="polite">API status not checked</span>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title" id="model-insights">
+          <div>
+            <h3>Prediction intelligence</h3>
+            <p>Conversion likelihood and session priority.</p>
+          </div>
+            <span class="step-badge" id="resultModeBadge">API RESULT</span>
+        </div>
+
+        <div id="placeholder" class="result-placeholder">
+          <div class="placeholder-icon">⌁</div>
+          <h3>Ready to analyze</h3>
+          <p>Enter session details and run the advisor to see a visual prediction preview.</p>
+        </div>
+
+        <div id="result" class="result-content">
+          <div class="result-top">
+            <h3>Session analysis</h3>
+            <span id="priority" class="priority">MEDIUM PRIORITY</span>
+          </div>
+
+          <div class="gauge-area">
+            <div class="gauge">
+              <svg viewBox="0 0 160 160" aria-label="Purchase probability gauge">
+                <defs>
+                  <linearGradient id="gaugeGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#6d8cff"/>
+                    <stop offset="100%" stop-color="#4ce4ff"/>
+                  </linearGradient>
+                </defs>
+                <circle class="gauge-track" cx="80" cy="80" r="70"/>
+                <circle id="gaugeProgress" class="gauge-progress" cx="80" cy="80" r="70"/>
+              </svg>
+              <div class="gauge-center">
+                <div id="probability" class="gauge-number">0</div>
+                <div class="gauge-percent">%</div>
+                <div class="gauge-caption">PURCHASE LIKELIHOOD*</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="verdict">
+            <strong id="verdictTitle">Purchase intent</strong>
+            <span id="verdictText">Analysis complete.</span>
+          </div>
+
+          <div class="result-bars">
+            <div>
+              <div class="bar-head">
+                <span>Purchase likelihood</span>
+                <span id="buyLabel">0%</span>
+              </div>
+              <div class="bar-track"><div id="buyBar" class="bar-fill bar-buy"></div></div>
+            </div>
+            <div>
+              <div class="bar-head">
+                <span>No-purchase likelihood</span>
+                <span id="notLabel">0%</span>
+              </div>
+              <div class="bar-track"><div id="notBar" class="bar-fill bar-not"></div></div>
+            </div>
+          </div>
+
+          <div class="disclaimer" id="resultDisclaimer">*Prediction returned by the configured backend.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bottom-grid" id="session-analytics">
+      <div class="panel">
+        <div class="panel-title">
+          <div>
+            <h3>Session signals</h3>
+            <p>Your current input values, normalized for display.</p>
+          </div>
+        </div>
+
+        <div class="signal-list">
+          <div>
+            <div class="signal-head"><span>Product page activity</span><span id="pagesSignal">—</span></div>
+            <div class="signal-track"><div id="pagesFill" class="signal-fill" style="width:0%"></div></div>
+          </div>
+          <div>
+            <div class="signal-head"><span>Product viewing duration</span><span id="durationSignal">—</span></div>
+            <div class="signal-track"><div id="durationFill" class="signal-fill" style="width:0%"></div></div>
+          </div>
+          <div>
+            <div class="signal-head"><span>Page value</span><span id="valueSignal">—</span></div>
+            <div class="signal-track"><div id="valueFill" class="signal-fill" style="width:0%"></div></div>
+          </div>
+        </div>
+        <div class="disclaimer">
+          Signal bars are scaled visual indicators, not feature importance scores.
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>ConversionIQ · Online Purchase Conversion Advisor</span>
+      <span>Academic ML project · UCI Online Shoppers dataset</span>
+    </footer>
+  </main>
+</div>
+
+<script>
+const form = document.getElementById("predictForm");
+
+// Configure these values for your deployment. In production on Vercel, it uses relative endpoints.
+let API_BASE_URL = (window.location.protocol === "file:" || (window.location.protocol === "http:" && (window.location.port === "5500" || window.location.port === "3000" || window.location.port === "5173")))
+  ? "http://127.0.0.1:8000"
+  : "";
+const ALLOW_DEMO_FALLBACK = false;
+// Exact input column names used to train the Logistic Regression pipeline.
+const API_TIMEOUT_MS = 15000;
+let activeRequest = null;
+
+const fields = {
+  pages: document.getElementById("pages"),
+  duration: document.getElementById("duration"),
+  pageValue: document.getElementById("pageValue")
+};
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function setSignal(name, value, maximum, formatter) {
+  const percent = clamp((value / maximum) * 100, 0, 100);
+  document.getElementById(name + "Signal").textContent = formatter(value);
+  document.getElementById(name + "Fill").style.width = percent + "%";
+}
+
+function getInputs() {
+  const values = {
+    pages: Number(fields.pages.value),
+    duration: Number(fields.duration.value),
+    pageValue: Number(fields.pageValue.value)
+  };
+  let valid = true;
+  Object.entries(fields).forEach(([name, element]) => {
+    const value = values[name];
+    const invalid = element.value.trim() === "" || !Number.isFinite(value) || value < Number(element.min);
+    element.classList.toggle("invalid", invalid);
+    if (invalid) valid = false;
+  });
+
+  if (!valid) {
+    alert("Please enter valid non-negative values for all three session inputs.");
+    return null;
+  }
+  return values;
+}
+
+/*
+  DEMO ONLY:
+  This illustrative formula is NOT trained on your dataset.
+  Replace this function with a request to your Python backend
+  when you are ready to connect the actual ML model.
+*/
+function simulatePrediction(data) {
+  const engagement = Math.min(data.pages / 20, 1);
+  const time = Math.min(data.duration / 900, 1);
+  const value = Math.min(data.pageValue / 50, 1);
+
+  // Illustrative score for UI testing only; not a calibrated probability.
+  const score = 8 + engagement * 20 + time * 22 + value * 42;
+  return Math.round(clamp(score, 2, 96));
+}
+
+function animateNumber(element, target) {
+  const start = performance.now();
+  const duration = 850;
+
+  function frame(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    element.textContent = Math.round(target * eased);
+
+    if (progress < 1) requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
+}
+
+function showResult(probability, data) {
+  const noPurchase = 100 - probability;
+
+  document.getElementById("placeholder").style.display = "none";
+  document.getElementById("result").classList.remove("show");
+
+  // Restart the reveal animation.
+  void document.getElementById("result").offsetWidth;
+  document.getElementById("result").classList.add("show");
+  document.getElementById("result").style.display = "block";
+
+  animateNumber(document.getElementById("probability"), probability);
+
+  const circumference = 2 * Math.PI * 70;
+  const offset = circumference * (1 - probability / 100);
+  document.getElementById("gaugeProgress").style.strokeDasharray = circumference;
+  document.getElementById("gaugeProgress").style.strokeDashoffset = offset;
+
+  document.getElementById("buyLabel").textContent = probability + "%";
+  document.getElementById("notLabel").textContent = noPurchase + "%";
+  document.getElementById("buyBar").style.width = probability + "%";
+  document.getElementById("notBar").style.width = noPurchase + "%";
+
+  const priority = document.getElementById("priority");
+  let priorityText;
+  let priorityColor;
+  let verdict;
+  let description;
+
+  const responseClass = data.predictedClass;
+  const suppliedPriority = data.priority;
+  if (suppliedPriority) {
+    priorityText = String(suppliedPriority).toUpperCase() + " PRIORITY";
+    priorityColor = String(suppliedPriority).toLowerCase() === "high" ? "#52e6b2" : String(suppliedPriority).toLowerCase() === "medium" ? "#ffd68a" : "#a8b4cf";
+    verdict = responseClass === undefined ? "Model prediction received" : "Predicted class: " + responseClass;
+    description = "Priority was supplied by the backend.";
+  } else if (probability >= 70) {
+    priorityText = "HIGH PRIORITY";
+    priorityColor = "#52e6b2";
+    verdict = responseClass === undefined || responseClass === null ? (data.isDemo ? "Stronger demo purchase signal" : "Higher purchase likelihood") : "Predicted class: " + responseClass;
+    description = data.isDemo ? "The illustrative score is high. In a real system, validate the model before prioritizing this session." : "Purchase probability returned by the model.";
+  } else if (probability >= 40) {
+    priorityText = "MEDIUM PRIORITY";
+    priorityColor = "#ffd68a";
+    verdict = responseClass === undefined || responseClass === null ? (data.isDemo ? "Moderate demo purchase signal" : "Moderate purchase likelihood") : "Predicted class: " + responseClass;
+    description = data.isDemo ? "The illustrative score is moderate. Additional session context could help assess conversion potential." : "Purchase probability returned by the model.";
+  } else {
+    priorityText = "LOW PRIORITY";
+    priorityColor = "#a8b4cf";
+    verdict = responseClass === undefined || responseClass === null ? (data.isDemo ? "Lower demo purchase signal" : "Lower purchase likelihood") : "Predicted class: " + responseClass;
+    description = data.isDemo ? "The illustrative score is low. This does not mean the visitor definitely will not purchase." : "Purchase probability returned by the model.";
+  }
+
+  priority.textContent = priorityText;
+  priority.style.color = priorityColor;
+  priority.style.borderColor = priorityColor + "44";
+  priority.style.background = priorityColor + "12";
+
+  document.getElementById("verdictTitle").textContent = verdict;
+  document.getElementById("verdictText").textContent = description;
+  document.getElementById("resultDisclaimer").textContent = data.isDemo
+    ? "Demo fallback is enabled: this illustrative score is not produced by your trained model."
+    : "Prediction returned by the configured backend. Confirm calibration and class threshold with your model owner.";
+  document.getElementById("resultModeBadge").textContent = data.isDemo ? "DEMO FALLBACK" : "API RESULT";
+
+  setSignal("pages", data.pages, 50, v => v + " pages");
+  setSignal("duration", data.duration, 1800, v => v.toLocaleString() + " sec");
+  setSignal("value", data.pageValue, 100, v => v.toLocaleString());
+}
+
+function buildPayload(data) {
+  return { pages: data.pages, duration: data.duration, page_value: data.pageValue };
+}
+
+function normalizeResponse(body) {
+  if (!body || typeof body !== "object") throw new Error("The API response must be a JSON object.");
+  let probability = body.purchase_probability ?? body.probability;
+  if (typeof probability !== "number" || !Number.isFinite(probability)) throw new Error("Response is missing numeric purchase_probability (0–1) or probability (0–100).");
+  if (probability >= 0 && probability <= 1) probability *= 100;
+  if (probability < 0 || probability > 100) throw new Error("Purchase probability must be between 0 and 1, or between 0 and 100.");
+  return { probability: Math.round(probability), predictedClass: body.predicted_class ?? body.class ?? null, priority: body.priority ?? null };
+}
+
+function setLoading(isLoading) {
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = isLoading;
+  button.textContent = isLoading ? "◌  Requesting prediction…" : "✦  Predict Purchase";
+  document.getElementById("requestStatus").textContent = isLoading ? "Waiting for the prediction API…" : "Predictions are sent to the configured FastAPI backend.";
+}
+
+async function checkApiConnection() {
+  const status = document.getElementById("connectionStatus");
+  const url = API_BASE_URL ? (API_BASE_URL.replace(/\/$/, "") + "/health") : "/health";
+  const displayUrl = API_BASE_URL ? url : (window.location.origin + "/health");
+  status.dataset.state = "loading"; status.textContent = "Checking " + displayUrl + "…";
+  try {
+    const response = await fetch(url, { signal: AbortSignal.timeout(API_TIMEOUT_MS) });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    const data = await response.json();
+    if (data.status && data.status !== "ok" && data.status !== "healthy") throw new Error("Backend reports status: " + data.status);
+    status.dataset.state = "ok"; status.textContent = "Connected · " + displayUrl;
+    document.getElementById("apiStatus").textContent = "Prediction API connected";
+    document.getElementById("apiStatusDetail").textContent = "Backend health check passed.";
+    document.getElementById("modePill").textContent = "● API CONNECTED";
+  } catch (error) {
+    status.dataset.state = "error"; status.textContent = "Connection failed: " + error.message;
+    document.getElementById("apiStatus").textContent = "Prediction API unavailable";
+    document.getElementById("apiStatusDetail").textContent = "Check the API URL, server, and CORS settings.";
+    document.getElementById("modePill").textContent = ALLOW_DEMO_FALLBACK ? "● DEMO FALLBACK ENABLED" : "● API OFFLINE";
+  }
+}
+
+async function requestPrediction(data) {
+  if (activeRequest) activeRequest.abort();
+  activeRequest = new AbortController();
+  const timeout = setTimeout(() => activeRequest.abort(), API_TIMEOUT_MS);
+  setLoading(true);
+  document.getElementById("requestError").classList.remove("show");
+  try {
+    const url = API_BASE_URL ? (API_BASE_URL.replace(/\/$/, "") + "/predict") : "/predict";
+    const response = await fetch(url, {
+      method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(buildPayload(data)), signal: activeRequest.signal
+    });
+    const raw = await response.text();
+    let body;
+    try { body = raw ? JSON.parse(raw) : {}; } catch { throw new Error("Backend returned invalid JSON (HTTP " + response.status + ")."); }
+    if (!response.ok) throw new Error(body.detail || body.message || ("Prediction failed (HTTP " + response.status + ")."));
+    const result = normalizeResponse(body);
+    showResult(result.probability, { ...data, ...result, isDemo: false });
+    return true;
+  } catch (error) {
+    if (ALLOW_DEMO_FALLBACK) {
+      showResult(simulatePrediction(data), { ...data, isDemo: true });
+      document.getElementById("requestStatus").textContent = "API unavailable; explicitly enabled demo fallback shown.";
+      return true;
+    }
+    const message = error.name === "AbortError" ? "Request timed out or was cancelled." : error.message;
+    document.getElementById("requestError").textContent = message + " No demo estimate was substituted.";
+    document.getElementById("requestError").classList.add("show");
+    document.getElementById("requestStatus").textContent = "Prediction failed.";
+    return false;
+  } finally {
+    clearTimeout(timeout); activeRequest = null; setLoading(false);
+  }
+}
+
+form.addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  const data = getInputs();
+  if (!data) return;
+
+  await requestPrediction(data);
+});
+
+document.getElementById("checkApiButton").addEventListener("click", checkApiConnection);
+
+Object.values(fields).forEach(field => {
+  field.addEventListener("input", () => field.classList.remove("invalid"));
+  field.addEventListener("change", () => field.classList.remove("invalid"));
+});
+
+// Navigation and utility interactions
+const navItems = Array.from(document.querySelectorAll('[data-nav]'));
+function setActiveNav(item) {
+  navItems.forEach(nav => nav.classList.toggle('active', nav === item));
+}
+function closeModal() {
+  const existing = document.querySelector('.app-modal-backdrop');
+  if (existing) existing.remove();
+}
+function openModal(title, bodyHTML) {
+  closeModal();
+  const backdrop = document.createElement('div');
+  backdrop.className = 'app-modal-backdrop';
+  backdrop.setAttribute('role', 'presentation');
+  backdrop.innerHTML = `<section class="app-modal" role="dialog" aria-modal="true" aria-label="${title}">
+    <div class="app-modal-head"><h3>${title}</h3><button class="modal-close" type="button" aria-label="Close dialog">✕</button></div>
+    <div class="app-modal-body">${bodyHTML}</div></section>`;
+  document.body.appendChild(backdrop);
+  backdrop.querySelector('.modal-close').addEventListener('click', closeModal);
+  backdrop.addEventListener('click', event => { if (event.target === backdrop) closeModal(); });
+  document.addEventListener('keydown', function escapeModal(event) {
+    if (event.key === 'Escape') { closeModal(); document.removeEventListener('keydown', escapeModal); }
+  }, { once: true });
+  backdrop.querySelector('.modal-close').focus();
+}
+navItems.forEach(item => item.addEventListener('click', () => {
+  setActiveNav(item);
+  switch (item.dataset.nav) {
+    case 'overview':
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      break;
+    case 'advisor':
+      document.getElementById('purchase-advisor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      fields.pages.focus({ preventScroll: true });
+      break;
+    case 'analytics':
+      document.getElementById('session-analytics').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      break;
+    case 'insights':
+      document.getElementById('model-insights').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (!document.getElementById('result').classList.contains('show')) {
+        document.getElementById('verdictText').textContent = 'Run an analysis to request a prediction from the configured backend.';
+        document.getElementById('placeholder').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      break;
+    case 'dataset':
+      openModal('Dataset Explorer', `<p>Dataset overview for the UCI Online Shoppers Purchasing Intention dataset used in this academic project.</p>
+        <div class="modal-stat-grid"><div class="modal-stat"><strong>12,330</strong><span>Total sessions</span></div><div class="modal-stat"><strong>1,908</strong><span>Purchase sessions</span></div><div class="modal-stat"><strong>15.47%</strong><span>Historical conversion</span></div></div>
+        <p>Each row represents a browsing session. These are the dataset summary values displayed on the dashboard; this frontend does not load or browse a CSV file.</p>
+        <button type="button" class="modal-action" id="datasetGoPredict">Try a session prediction</button>`);
+      document.getElementById('datasetGoPredict').addEventListener('click', () => { closeModal(); setActiveNav(document.querySelector('[data-nav="advisor"]')); document.getElementById('purchase-advisor').scrollIntoView({behavior:'smooth'}); });
+      break;
+    case 'settings':
+      openModal('Settings', `<p>Customize the interface and configure the FastAPI service.</p>
+        <label style="display:block;margin:16px 0;color:#dbe3fa;font-size:12px">API base URL<input id="apiBaseInput" type="url" value="${API_BASE_URL}" style="display:block;width:100%;margin-top:8px;padding:11px;border:1px solid #293551;border-radius:9px;background:#0b1121;color:white"></label>
+        <p>Demo fallback is ${ALLOW_DEMO_FALLBACK ? 'enabled' : 'disabled'} in this file. Change ALLOW_DEMO_FALLBACK near the top of the script only if you intentionally want illustrative scores during API failures.</p>
+        <label style="display:flex;align-items:center;gap:10px;margin:16px 0;color:#dbe3fa;font-size:13px"><input id="motionToggle" type="checkbox" ${document.documentElement.classList.contains('reduced-motion') ? 'checked' : ''}> Reduce interface animations</label>
+        <button type="button" class="modal-action" id="resetFormButton">Reset prediction form</button>
+        <button type="button" class="modal-action" id="closeSettingsButton">Done</button>`);
+      document.getElementById('apiBaseInput').addEventListener('change', event => {
+        const nextUrl = event.target.value.trim().replace(/\/$/, '');
+        if (nextUrl) { API_BASE_URL = nextUrl; document.getElementById('connectionStatus').textContent = 'API URL updated for this page session.'; document.getElementById('modePill').textContent = '● API NOT CHECKED'; }
+      });
+      document.getElementById('motionToggle').addEventListener('change', event => document.documentElement.classList.toggle('reduced-motion', event.target.checked));
+      document.getElementById('resetFormButton').addEventListener('click', () => { form.reset(); Object.values(fields).forEach(field => field.classList.remove('invalid')); document.getElementById('result').classList.remove('show'); document.getElementById('result').style.display = 'none'; document.getElementById('placeholder').style.display = 'flex'; document.getElementById('requestError').classList.remove('show'); ['pages','duration','value'].forEach(name => { document.getElementById(name+'Signal').textContent = '—'; document.getElementById(name+'Fill').style.width = '0%'; }); closeModal(); });
+      document.getElementById('closeSettingsButton').addEventListener('click', closeModal);
+      break;
+  }
+}));
+
+document.querySelector('.demo-pill').title = ALLOW_DEMO_FALLBACK ? 'Demo fallback is explicitly enabled in this HTML.' : 'Predictions require the configured API; demo fallback is disabled.';
+checkApiConnection();
+
+</script>
+</body>
+</html>

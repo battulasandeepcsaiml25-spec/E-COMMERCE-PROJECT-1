@@ -1,8 +1,11 @@
-"""Vercel Serverless Function entry point for ConversionIQ FastAPI API."""
+"""Vercel Serverless Function entry point for ConversionIQ 'app' service."""
+import json
 import math
+import os
 from pathlib import Path
 from typing import Literal
-import os
+import urllib.error
+import urllib.request
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +13,11 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
 BASE_DIR = Path(__file__).resolve().parent
+
+# Read the internal service binding for 'backend' service if deployed in multi-service mode
+BACKEND_URL = os.environ.get("BACKEND_URL")
+if BACKEND_URL:
+    BACKEND_URL = BACKEND_URL.rstrip("/")
 
 def get_index_html() -> str:
     candidates = [
@@ -65,9 +73,6 @@ DEFAULT_BASELINE_VALUES = {
     "VisitorType_Returning_Visitor": 1.0,
 }
 
-# Parameters extracted from the trained Pipeline(StandardScaler, LogisticRegression).
-# Using exact formula computation keeps the Vercel function bundle ~15MB instead of 270MB+
-# (preventing AWS Lambda/Vercel size limit errors) and enables instant cold starts.
 SCALER_MEAN = [
     2.338550665718061, 80.67557968444304, 0.5028966358369753, 35.44457252446773,
     31.665921333468848, 1202.1309802170388, 0.021353204579632076, 0.04218055310448217,
@@ -91,9 +96,8 @@ MODEL_COEF = [
 
 MODEL_INTERCEPT = -0.5534685942676714
 
-app = FastAPI(title="ConversionIQ Prediction API")
+app = FastAPI(title="ConversionIQ App Service")
 
-# Broad CORS for deployment environments
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -121,8 +125,23 @@ def root():
 @app.get("/health")
 @app.get("/api/health")
 def health():
+    if BACKEND_URL:
+        try:
+            req = urllib.request.Request(f"{BACKEND_URL}/health", headers={"Accept": "application/json"})
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                return {
+                    "status": "ok",
+                    "service": "app",
+                    "binding": "backend",
+                    "backend_response": data,
+                }
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=f"Backend service unreachable via binding: {exc}")
+
     return {
         "status": "ok",
+        "service": "app",
         "model_loaded": True,
         "feature_count": len(FEATURE_NAMES),
     }
@@ -130,6 +149,22 @@ def health():
 @app.post("/predict", response_model=PredictionResponse)
 @app.post("/api/predict", response_model=PredictionResponse)
 def predict(request: PredictionRequest):
+    if BACKEND_URL:
+        try:
+            payload = json.dumps(request.model_dump()).encode("utf-8")
+            req = urllib.request.Request(
+                f"{BACKEND_URL}/predict",
+                data=payload,
+                headers={"Content-Type": "application/json", "Accept": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                return PredictionResponse(**data)
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=f"Failed to query backend service via binding: {exc}")
+
+    # Fallback to local computation when running standalone without BACKEND_URL binding
     input_values = dict(DEFAULT_BASELINE_VALUES)
     overrides = {
         "ProductRelated": float(request.pages),
@@ -140,12 +175,10 @@ def predict(request: PredictionRequest):
 
     feature_values = [float(input_values[name]) for name in FEATURE_NAMES]
 
-    # Logistic Regression inference: z = intercept + sum(coef_i * (x_i - mean_i) / scale_i)
     z = MODEL_INTERCEPT
     for x, m, s, c in zip(feature_values, SCALER_MEAN, SCALER_SCALE, MODEL_COEF):
         z += c * ((x - m) / s)
 
-    # Sigmoid function for probability
     probability = 1.0 / (1.0 + math.exp(-z))
     positive_prediction = probability >= 0.5
 
